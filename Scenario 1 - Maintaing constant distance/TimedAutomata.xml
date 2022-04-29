@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan Auto_Brake,Auto_Gas,Set_Speed;
+clock  x;</declaration>
+	<template>
+		<name x="5" y="5">Leading_Truck</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-874" y="-400">
+			<name x="-933" y="-442">Constant_Speed</name>
+			<label kind="invariant" x="-933" y="-408">x&lt;=1</label>
+		</location>
+		<location id="id1" x="-721" y="-459">
+			<name x="-731" y="-493">Scan_Environment</name>
+			<label kind="invariant" x="-731" y="-442">x&lt;=1</label>
+		</location>
+		<location id="id2" x="-585" y="-400">
+			<name x="-595" y="-434">Brake</name>
+		</location>
+		<location id="id3" x="-721" y="-358">
+			<name x="-747" y="-400">Accelerate</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-816" y="-365">Set_Speed!</label>
+			<label kind="assignment" x="-856" y="-379">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-680" y="-374">Auto_Gas!</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-663" y="-459">Auto_Brake!</label>
+			<label kind="assignment" x="-680" y="-433">x:=0</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="assignment" x="-806" y="-425">x:=0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Following_Truck1</name>
+		<location id="id4" x="-365" y="-85">
+			<name x="-450" y="-127">Constant_Speed</name>
+		</location>
+		<location id="id5" x="-229" y="-144">
+			<name x="-239" y="-178">Brake</name>
+		</location>
+		<location id="id6" x="-110" y="-85">
+			<name x="-120" y="-119">Accelerate</name>
+		</location>
+		<init ref="id4"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-289" y="-68">Set_Speed?</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="-195" y="-144">Auto_Gas?</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-348" y="-161">Auto_Brake?</label>
+		</transition>
+	</template>
+	<system>
+// List one or more processes to be composed into a system.
+system Leading_Truck,Following_Truck1;
+
+    </system>
+	<queries>
+		<query>
+			<formula>A[]not deadlock
+</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
