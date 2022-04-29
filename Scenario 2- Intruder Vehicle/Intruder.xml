@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan intruder_vehicle_approaching, safe_spacing, intruder_vehicle_leaving, auto_deceleration, reach_safe_spacing_from_vehicle;
+clock x, y ;</declaration>
+	<template>
+		<name x="5" y="5">FollowingTruck</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="0" y="0">
+			<name x="-85" y="-42">SteadyState</name>
+			<label kind="invariant" x="-10" y="17">x &lt;= 1</label>
+		</location>
+		<location id="id1" x="238" y="-59">
+			<name x="228" y="-93">StandByState</name>
+			<label kind="invariant" x="255" y="-76">x &lt;= 4</label>
+		</location>
+		<location id="id2" x="238" y="119">
+			<name x="204" y="136">SafelySpaced</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-8" y="76">intruder_vehicle_leaving!</label>
+			<label kind="assignment" x="51" y="59">x := 0</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="246" y="25">x &gt;= 3</label>
+			<label kind="synchronisation" x="246" y="8">safe_spacing!</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="8" y="-76">intruder_vehicle_approaching!</label>
+			<label kind="assignment" x="85" y="-59">x := 0</label>
+		</transition>
+	</template>
+	<template>
+		<name>Controller</name>
+		<declaration>bool safe_spacing_completed = false ;</declaration>
+		<location id="id3" x="-884" y="-484">
+			<name x="-952" y="-518">IdleState</name>
+		</location>
+		<location id="id4" x="-578" y="-484">
+			<name x="-588" y="-518">S2</name>
+		</location>
+		<location id="id5" x="-824" y="-289">
+			<name x="-833" y="-272">S3</name>
+		</location>
+		<location id="id6" x="-1011" y="-365">
+			<name x="-1062" y="-348">SafelySpaced</name>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-1105" y="-450">intruder_vehicle_leaving?</label>
+			<label kind="assignment" x="-1028" y="-433">y := 0</label>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-960" y="-314">y &gt;= 3</label>
+			<label kind="synchronisation" x="-994" y="-280">auto_deceleration!</label>
+			<label kind="assignment" x="-1037" y="-297">safe_spacing_completed=true</label>
+		</transition>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-654" y="-399">y &gt;= 1</label>
+			<label kind="synchronisation" x="-722" y="-365">reach_safe_spacing_from_vehicle!</label>
+			<label kind="assignment" x="-714" y="-382">safe_spacing_completed=false</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-790" y="-510">safe_spacing ?</label>
+			<label kind="assignment" x="-765" y="-484">y := 0</label>
+		</transition>
+	</template>
+	<system>followingTruck1 = FollowingTruck() ;
+controller1 = Controller() ;
+
+
+
+// List one or more processes to be composed into a system.
+system followingTruck1, controller1;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
