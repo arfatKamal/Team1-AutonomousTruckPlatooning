@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+int[0,1] turn_on ;
+int[0,1] platoon;
+int[0,1] CACC_on;
+int[0,1] comm;
+int distance;
+int [0,1] scan_environment,cruise_malfunction;
+chan platoon_end,comm_failure,turn_on_autonomous,reset,reset2;
+chan join_request;
+chan leave;
+chan request_accepted;
+chan request_rejected;
+chan comm_chan;
+broadcast chan set_min_dist;
+const int max_v = 7;
+const int max_dist = 3;
+chan send;
+clock t;
+int num_v = 0;// number of vehilce in platoon </declaration>
+	<template>
+		<name x="5" y="5">following_truck</name>
+		<parameter>int[0,1] &amp;turn_on</parameter>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="-136" y="-306">
+			<name x="-161" y="-365">manual_driving</name>
+		</location>
+		<location id="id1" x="-136" y="-153">
+			<name x="-146" y="-187">decision_node</name>
+		</location>
+		<location id="id2" x="-187" y="-85">
+			<name x="-221" y="-68">Platoon_mode</name>
+		</location>
+		<location id="id3" x="204" y="-119">
+			<name x="187" y="-110">platooning</name>
+		</location>
+		<location id="id4" x="476" y="-255">
+			<name x="466" y="-289">cruise_mode</name>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-42" y="-527">distance&gt;max_dist || comm==0</label>
+			<label kind="synchronisation" x="8" y="-501">reset!</label>
+			<label kind="assignment" x="-76" y="-459">CACC_on:=0, comm:=0</label>
+			<nail x="476" y="-484"/>
+			<nail x="-136" y="-467"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="323" y="-178">comm_failure?</label>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="238" y="-17">comm_chan?</label>
+			<nail x="263" y="-42"/>
+			<nail x="195" y="-17"/>
+		</transition>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id0"/>
+			<label kind="guard" x="221" y="-314">distance&gt;max_dist || comm==0</label>
+			<label kind="synchronisation" x="204" y="-348">platoon_end?</label>
+			<label kind="assignment" x="212" y="-331">CACC_on:=0, comm:=0</label>
+			<nail x="204" y="-399"/>
+			<nail x="93" y="-399"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-42" y="-9">set_min_dist?</label>
+			<label kind="assignment" x="102" y="8">CACC_on :=1, distance :=1</label>
+			<nail x="68" y="25"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-119" y="-263">platoon == 1</label>
+			<nail x="-59" y="-272"/>
+			<nail x="-59" y="-204"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-305" y="-76">send?</label>
+			<label kind="assignment" x="-306" y="-93">t:=0</label>
+			<nail x="-323" y="-34"/>
+			<nail x="-306" y="-161"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="85" y="-289">platoon_end?</label>
+			<label kind="assignment" x="85" y="-272">comm:=0</label>
+			<nail x="51" y="-85"/>
+			<nail x="119" y="-85"/>
+			<nail x="119" y="-340"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-17" y="-186">leave!</label>
+			<label kind="assignment" x="-51" y="-170">num_v:=num_v-1, 
+comm:=0</label>
+			<nail x="25" y="-101"/>
+			<nail x="33" y="-297"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="-221" y="-119">request_accepted?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-178" y="-238">request_rejected?</label>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="-289" y="-238">platoon_end?</label>
+			<nail x="-229" y="-187"/>
+			<nail x="-229" y="-255"/>
+		</transition>
+	</template>
+	<template>
+		<name x="5" y="5">leading_truck</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id5" x="-552" y="-586">
+			<name x="-544" y="-620">manual_driving</name>
+		</location>
+		<location id="id6" x="-790" y="-365">
+			<name x="-909" y="-399">Platoon_Mode_init</name>
+		</location>
+		<location id="id7" x="-391" y="-365">
+			<name x="-416" y="-348">accepted</name>
+		</location>
+		<location id="id8" x="-153" y="-365">
+			<name x="-204" y="-340">platooning</name>
+		</location>
+		<location id="id9" x="76" y="-501">
+			<name x="68" y="-535">cruise_mode</name>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-408" y="-739">comm==0 || 
+distance &gt; max_dist</label>
+			<label kind="synchronisation" x="-510" y="-722">platoon_end!</label>
+			<label kind="assignment" x="-399" y="-680">CACC_on:=0,
+num_v:=num_v-1</label>
+			<nail x="68" y="-688"/>
+			<nail x="-552" y="-680"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-68" y="-408">turn_on_autonomous?</label>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id8"/>
+			<label kind="guard" x="-263" y="-289">t&gt;=1</label>
+			<label kind="synchronisation" x="-348" y="-255">comm_chan!</label>
+			<nail x="-331" y="-280"/>
+			<nail x="-170" y="-238"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="-306" y="-416">set_min_dist!</label>
+			<label kind="assignment" x="-297" y="-391">CACC_on:=1</label>
+			<nail x="-340" y="-365"/>
+		</transition>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id5"/>
+			<label kind="guard" x="-144" y="-561">comm==0 || 
+distance &gt; max_dist</label>
+			<label kind="synchronisation" x="-144" y="-510">platoon_end!</label>
+			<label kind="assignment" x="-144" y="-484">CACC_on:=0,
+num_v:=num_v-1</label>
+			<nail x="-153" y="-586"/>
+			<nail x="-442" y="-586"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-892" y="-331">t &gt;=2</label>
+			<label kind="synchronisation" x="-875" y="-348">send!</label>
+			<nail x="-867" y="-305"/>
+			<nail x="-926" y="-331"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="guard" x="-613" y="-327">num_v&gt;max_v</label>
+			<label kind="synchronisation" x="-629" y="-306">request_rejected!</label>
+			<nail x="-528" y="-302"/>
+			<nail x="-630" y="-302"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="guard" x="-586" y="-408">num_v &lt;= max_v</label>
+			<label kind="synchronisation" x="-595" y="-391">request_accepted!</label>
+			<label kind="assignment" x="-578" y="-365">num_v:= num_v+1</label>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-561" y="-493">platoon_end!</label>
+			<label kind="assignment" x="-620" y="-476">platoon:=0, num_v:=0</label>
+			<nail x="-459" y="-451"/>
+			<nail x="-467" y="-535"/>
+			<nail x="-527" y="-569"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id6"/>
+			<label kind="assignment" x="-748" y="-484">platoon:=1</label>
+		</transition>
+	</template>
+	<template>
+		<name>controller_vleading</name>
+		<declaration>clock x;</declaration>
+		<location id="id10" x="-323" y="-76">
+			<name x="-382" y="-119">Constant_Speed</name>
+			<label kind="invariant" x="-333" y="-59">x&lt;=1</label>
+		</location>
+		<location id="id11" x="77" y="-110">
+			<name x="67" y="-144">Accerate</name>
+		</location>
+		<location id="id12" x="77" y="60">
+			<name x="67" y="26">decelerate</name>
+		</location>
+		<location id="id13" x="-561" y="-68">
+			<name x="-571" y="-102">idle</name>
+		</location>
+		<init ref="id13"/>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-178" y="195">platoon_end?</label>
+			<nail x="-229" y="280"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-212" y="-257">platoon_end?</label>
+			<nail x="-230" y="-370"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-228" y="110">platoon_end!</label>
+			<nail x="-246" y="195"/>
+		</transition>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-245" y="-203">platoon_end!</label>
+			<nail x="-263" y="-263"/>
+		</transition>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="-527" y="-102">turn_on_autonomous!</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id10"/>
+			<label kind="guard" x="-399" y="34">scan_environment==1 &amp;&amp; t&gt;=1</label>
+			<nail x="-416" y="-16"/>
+			<nail x="-348" y="26"/>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id11"/>
+			<label kind="guard" x="-16" y="-76">distance&lt;30</label>
+			<label kind="assignment" x="-33" y="-101">distance:=30</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id12"/>
+			<label kind="guard" x="-33" y="-25">distance&gt;30</label>
+		</transition>
+	</template>
+	<template>
+		<name>controller_v1</name>
+		<declaration>clock x;</declaration>
+		<location id="id14" x="-909" y="-17">
+		</location>
+		<location id="id15" x="-442" y="-102">
+			<name x="-501" y="-145">Constant_Speed</name>
+			<label kind="invariant" x="-452" y="-85">x&lt;=1</label>
+		</location>
+		<location id="id16" x="-255" y="-170">
+			<name x="-265" y="-204">Accerate</name>
+		</location>
+		<location id="id17" x="-255" y="0">
+			<name x="-265" y="-34">decelerate</name>
+		</location>
+		<init ref="id14"/>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-799" y="-51">comm_failure!</label>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-679" y="-136">reset?</label>
+			<nail x="-697" y="-136"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-493" y="85">reset?</label>
+			<nail x="-459" y="144"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="-833" y="-212">reset?</label>
+			<nail x="-255" y="-280"/>
+			<nail x="-909" y="-127"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-582" y="35">scan_environment==1 &amp;&amp; t&gt;=1</label>
+			<nail x="-535" y="-42"/>
+			<nail x="-467" y="0"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-373" y="-225">distance==30</label>
+			<nail x="-391" y="-212"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="-348" y="-136">distance&lt;30</label>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id15"/>
+			<label kind="guard" x="-373" y="-29">distance==30</label>
+			<nail x="-391" y="9"/>
+		</transition>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id17"/>
+			<label kind="guard" x="-365" y="-85">distance&gt;30</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+v1 = following_truck(turn_on );
+v2 = following_truck(turn_on );
+c1 = controller_vleading();
+c2 = controller_v1();
+vleading = leading_truck();
+// List one or more processes to be composed into a system.
+system v1,vleading,c1,c2;  </system>
+	<queries>
+		<query>
+			<formula>E&lt;&gt; v1.Platoon_mode</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>E&lt;&gt; v1.Platoon_mode and not vleading.manual_driving and not vleading.start</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] distance &lt; max_dist</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] num_v&lt;=max_v</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[]  not deadlock</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
