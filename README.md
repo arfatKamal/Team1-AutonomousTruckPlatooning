@@ -1,4 +1,4 @@
-Team1-Autonomous System.
+_**Team1-Autonomous System**_
  
 For the Autonomous Lab project, we will try to cover the required scenarios required to realise an Autonomous Truck Platooning. The following approach is taken-
 
