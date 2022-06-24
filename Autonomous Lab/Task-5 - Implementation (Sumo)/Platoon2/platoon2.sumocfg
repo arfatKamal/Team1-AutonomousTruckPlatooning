@@ -1,0 +1,13 @@
+<configuration>
+    <input>
+        <route-files value= "platoon2.rou.xml" />
+        <net-file value= "platoon2.net.xml" />
+
+
+    </input>
+    <processing>
+        <step-method.ballistic value="true"/>
+    </processing>
+
+
+</configuration>

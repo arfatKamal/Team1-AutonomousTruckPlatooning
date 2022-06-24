@@ -1,0 +1,32 @@
+<routes>
+    <!--<vType id="car"
+            vClass="passenger" length = "5" accel = "3.5" decel="2.2"
+            sigma="1.0" maxSpeed="10"/>-->
+    <!--<vType id="ev"
+            vClass="emergency" length="7" accel="5.5" decel="2.2" sigma="1.0"
+            maxSpeed="20" guiShape="emergency" speedFactor="2.0"
+            minGapLat="0.2" />-->
+    <!--<vType id="truck"
+           vClass="truck" accel = "2.0" decel="1.5" sigma="1.0"  guiShape="truck" carFollowModel="Krauss" />-->
+<!--    <vType id="automated"  />-->
+    <vType id="automated" color="white" guiShape="truck" minGap="5"/>
+    <vType id="leader_automated" color="red" guiShape="truck"/>
+    <vType id="follower_automated" color="black" guiShape="truck"/>
+
+
+    <route id="route_0" edges="E8 E0 E1" />
+    <route id="route_1" edges="E11 E0 E2 E3"/>
+    <route id="route_2" edges="E9 E0 E2 E4 E5"/>
+    <route id="route_3" edges="E10 E0 E2 E4 E6"/>
+    <route id="route_4" edges="E12 E0 E2 E4 E6"/>
+<!--    <flow id="carflow" type="automated" beg="0" end="0" number="5" from="E12" to="E6" />-->
+<!--    <flow id="evflow" type="ev" beg="0" end="0" number="1" from="E4" to="E7" />-->
+
+
+        <vehicle id="t_01" type="automated" route="route_4" depart="0"/>
+        <vehicle id="t_02" type="automated" route="route_1" depart="0"/>
+        <vehicle id="t_03" type="automated" route="route_0" depart="0"/>
+        <vehicle id="t_04" type="automated" route="route_2"  depart="0"/>
+        <vehicle id="t_05" type="automated" route="route_3" depart="0"/>
+
+</routes>
